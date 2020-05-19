@@ -1,0 +1,4 @@
+(executable
+  (name BsFigmaPpx)
+  (public_name bs-figma-ppx)
+  (libraries lib))

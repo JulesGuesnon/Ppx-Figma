@@ -1,0 +1,61 @@
+{
+    "name": "bs-figma-ppx",
+    "version": "0.1.0",
+    "description": "Example Reason Esy Project",
+    "license": "MIT",
+    "esy": {
+        "build": "dune build -p #{self.name}",
+        "NOTE": "Optional release Section. Customizes result of `esy release`",
+        "release": {
+            "bin": ["bs-figma-ppx"]
+        }
+    },
+    "scripts": {
+        "run": "esy x bs-figma-ppx"
+    },
+    "dependencies": {
+        "ocaml": "~4.06.100",
+        "@opam/ssl": "*",
+        "@opam/lwt_ssl": "*",
+        "@opam/dune": "*",
+        "@opam/reason": "*",
+        "@opam/ppxlib": "*",
+        "@opam/cohttp": "*",
+        "@opam/cohttp-lwt-unix": "*",
+        "@opam/lwt": "*",
+        "@opam/yojson": "*"
+    },
+    "devDependencies": {
+        "@opam/merlin": "*",
+        "@opam/jbuilder": "*"
+    },
+    "resolutions": {
+        "@opam/dune": {
+            "source": "https://github.com/ocaml/dune/releases/download/2.3.1/dune-2.3.1.tbz#408307fb131d979658be51f23128a8ea76470915",
+            "override": {
+                "buildsInSource": true,
+                "build": [
+                    ["ocaml", "configure.ml", "--libdir", "#{self.lib}"],
+                    ["ocaml", "bootstrap.ml"],
+                    [
+                        "./dune.exe",
+                        "build",
+                        "-p",
+                        "dune",
+                        "--profile",
+                        "dune-bootstrap"
+                    ]
+                ],
+                "install": "esy-installer dune.install",
+                "buildEnv": {
+                    "OCAMLFIND_CONF": "$SECONDARY_OCAMLFIND_CONF"
+                },
+                "dependencies": {
+                    "esy-secondary-toolchain-findlib-conf": "*"
+                }
+            }
+        },
+        "esy-secondary-toolchain-findlib-conf": "prometheansacrifice/esy-secondary-toolchain-findlib-conf#3b2d207",
+        "@opam/ocaml-secondary-compiler": "esy-ocaml/ocaml#a5a77246b60f3"
+    }
+}
