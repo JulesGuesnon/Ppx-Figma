@@ -38,7 +38,7 @@ jobs:
               with:
                   path: ${{ steps.print_esy_cache.outputs.esy_cache }}
                   key: build-${{ matrix.os }}-${{ hashFiles('**/index.json') }}
-                  restore-keys: build-${{ runner.os }}-
+                  restore-keys: build-${{ matrix.os }}-
 
             - name: Esy build
               run: |
@@ -55,6 +55,7 @@ jobs:
                   name: bin-${{ matrix.os }}
                   path: _release/bin/ppx-figma
     release:
+        needs: build
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
