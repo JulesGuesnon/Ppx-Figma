@@ -47,9 +47,13 @@ So create a new document in Figma, and create a new page called `Styleguide` on 
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/styleguide_before_create.png?raw=true"/>
 
+> All the pages
+
 <br />
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/styleguide_create.png?raw=true"/>
+
+> Pages while creating the `Styleguide`
 
 ### Fonts
 
@@ -57,13 +61,19 @@ All the fonts will need to be in a frame call `Fonts`. So create the frame with 
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/frame_tool.png?raw=true"/>
 
+> The frame tool in the toolbar
+
 <br/>
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/fonts_frame.png?raw=true"/>
 
+> The frame named `Fonts`
+
 Then to define your font styles, create a text, apply your style to it and there you go:
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/fonts_conventions.png?raw=true"/>
+
+> Example of font namings
 
 :warning: **Important informations**
 
@@ -77,17 +87,25 @@ All the colors will need to be in a frame call `Colors`. So create the frame wit
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/frame_tool.png?raw=true"/>
 
+> The frame tool in the toolbar
+
 <br/>
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/colors_frame.png?raw=true"/>
+
+> The frame named `Colors`
 
 Then you can create a rectangle or an ellipse with the desired color:
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/colors_conventions.png?raw=true"/>
 
+> The color frame with the colors
+
 Finally name you rectangles or ellipses (here it's the name of the color, but it can be whatever you want of course):
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/colors_namings.png?raw=true"/>
+
+> Naming of the colors
 
 :warning: **Important informations**
 
@@ -130,13 +148,19 @@ You'll need to generate a token to allow the request on the document. Here are t
 
     <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_profile.png?raw=true"/>
 
+    > Profile navigation
+
 -   Then go in the settings
 
     <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_settings.png?raw=true"/>
 
+    > Profile navigation with settings
+
 -   Finally generate a token
 
     <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_generate.png?raw=true"/>
+
+    > Section with the generation of the token
 
 ### Get a document id
 
@@ -194,6 +218,8 @@ For the following fonts:
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/fonts_conventions.png?raw=true"/>
 
+> Example of the fonts in Figma
+
 The following code is generated:
 
 ```reason
@@ -230,7 +256,11 @@ For the following colors:
 
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/colors_conventions.png?raw=true"/>
 
+> Example of colors
+
 <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/colors_namings.png?raw=true"/>
+
+> Example of colors naming
 
 The following code is generated:
 
