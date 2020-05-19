@@ -11,8 +11,12 @@ To simplify this process, I made a ppx that automatically import colors and font
 
 Before you dive in you need to be aware of some points:
 
--   Ppx-Figma is based on Figma api: - It will require an api key to make request (refer to the Setup part to know how to generate a key), and a request is made on every build - A request is made at each build, so the bigger your Figma document is, the longer the request will be and the longer the build will be. it sounds pretty scary but don't worry there's a cache system and you have control on it
--   By using Ppx-Figma your designer will have to respect an architecture for his fonts and colors. This architecture has been thought with a designer but everyone has his habits. But if you see something to improve feel free to open an issue
+-   Ppx-Figma is based on Figma api:
+
+    -   It will require an api key to make request (refer to the Setup part to know how to generate a key)
+    -   A request is made at each build, so the bigger your Figma document is, the longer the request will be and the longer the build will be. it sounds pretty scary but don't worry there's a cache system and you have control on it
+
+-   By using Ppx-Figma your designer will have to respect an architecture for his fonts and colors. This architecture has been thought with a designer but everyone has his habits. But if you see somethin-g to improve feel free to open an issue
 
 ## :building_construction: Figma architecture
 
@@ -128,7 +132,130 @@ Here is the syntax of the ppx:
 open Css;
 
 %figma
-["your token", "the file id", "cache time"]
+["<your token>", "<the document id>", "<cache time>"]
+
+include Styleguide;
 ```
 
-:construction: **STILL WIP** :construction:
+-   \<your token\>: The token you generated in Figma
+-   \<the document id\>: The id that you get in the url
+-   \<cache time\>: The cache time is composed of 2 things: the time and the unit: - Time is an `int` - The unit if one of the following: - `ms` (milliseconds) - `s` (seconds) - `m` (minutes) - `h` (hours) - `d` (day) - `mon` (month) - `y` (year) - Here is an example of a cache time: `"30m"` - **By default** the cache time is `"10m"`
+
+Example of the ppx:
+
+```reason
+open Css;
+
+%figma
+["mytoken", "documentid", "1h"]
+
+include Styleguide;
+```
+
+### Generated code
+
+Here is an example of the generated code of a Styleguide in Figma
+
+#### Fonts
+
+For the following fonts:
+
+<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/fonts_conventions.png?raw=true"/>
+
+The following code is generated:
+
+```reason
+module Styleguide = {
+	module Fonts = {
+		let light = style([...])
+
+		module Body = {
+			let small = style([...])
+			let regular = style([...])
+
+			module Card = {
+				let title = style([...])
+				let medium_legend = style([...])
+			}
+
+			/* Casing will depend on the figma but will respect the variable/module casing */
+			let cTA = style([...])
+		}
+
+		module Title = {
+			let normal = style([...])
+			let large = style([...])
+		}
+	}
+
+	...
+}
+```
+
+#### Colors
+
+For the following colors:
+
+<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/colors_conventions.png?raw=true"/>
+
+<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/colors_namings.png?raw=true"/>
+
+The following code is generated:
+
+```reason
+module Styleguide = {
+	...
+
+	module Colors = {
+		let red = style([...])
+		let green = style([...])
+		let blue = style([...])
+		let yellow = style([...])
+	}
+}
+```
+
+### Apply the style
+
+Last step is to apply the style
+
+```reason
+[@react.component]
+let make = () => {
+	/*
+		Where Theme would be the name of the file where you called the ppx
+		but it can be what you want
+	*/
+	<h1 className=Theme.Fonts.Title.large>...</h1>
+}
+```
+
+### What if I need to override a style ?
+
+Rather than including the `Styleguide` module, you can let it wrap the `Fonts` and `Colors` modules and create you own modules and merge the existing styles
+
+````reason
+open Css;
+
+%figma
+["mytoken", "documentid", "1h"]
+
+/* This example is based on the generated code above */
+module Fonts = {
+	let light = Styleguide.Fonts.light;
+
+	module Body = {
+		include Styleguide.Fonts.Body;
+
+		let small = merge([
+			small,
+			style([fontSize(50->px)])
+		])
+	};
+
+	module Title = Styleguide.Fonts.Title;
+};
+
+/* Here I rename the Colors module */
+module AnotherName = Styleguide.Colors;
+````

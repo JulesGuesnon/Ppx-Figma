@@ -38,6 +38,7 @@ module Types = {
     visible: option(bool),
     type_: string,
     styles: list((string, primitive)),
+    characters: string,
   };
 
   type fill = {color: color_};
@@ -201,6 +202,7 @@ module Parser = {
       name: textNode |> member("name") |> to_string,
       visible: textNode |> member("visible") |> to_bool_option,
       type_: textNode |> member("type") |> to_string,
+      characters: textNode |> member("characters") |> to_string,
       styles:
         styles^
         |> List.filter(((key, _)) =>

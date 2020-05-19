@@ -44,7 +44,7 @@ let expand = (~loc, ~path as _, args: list(string)) => {
       | Some(texts) =>
         texts
         |> List.map((text: text) =>
-             text.name |> Format.parseString(~styles=text.styles)
+             text.characters |> Format.parseString(~styles=text.styles)
            )
         |> Format.mergeNodes
         |> List.map(node => Format.nodeToAstNode(~loc, node))
@@ -56,9 +56,29 @@ let expand = (~loc, ~path as _, args: list(string)) => {
         colors
         |> List.map((color: color) => {
              let fill = color.fills |> List.hd;
+             let name =
+               String.map(
+                 char =>
+                   if (char == ' ' || char == '-') {
+                     '_';
+                   } else {
+                     char;
+                   },
+                 color.name,
+               );
+             let nameFirstChar = name.[0] |> Char.lowercase_ascii;
 
              [%stri
-               let [%p Ast_builder.Default.pvar(~loc, color.name)] =
+               let [%p
+                 Ast_builder.Default.pvar(
+                   ~loc,
+                   Printf.sprintf(
+                     "%c%s",
+                     nameFirstChar,
+                     String.sub(name, 1, String.length(name) - 1),
+                   ),
+                 )
+               ] =
                  rgba(
                    [%e
                      Utils.Ast.makeInt(
