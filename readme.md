@@ -165,7 +165,10 @@ You'll need to generate a token to allow the request on the document. Here are t
 ### Get a document id
 
 The last thing to do is to get the document id. It's pretty simple, you'll find it in the url of the document:
-`https://www.figma.com/file/the_id_is_this_part_of_the_url`
+
+<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/document_id.png?raw=true" />
+
+> The red part is the id
 
 ## :fire: How to use it ?
 
