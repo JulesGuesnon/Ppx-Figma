@@ -1,0 +1,87 @@
+name: Build
+
+on:
+    create:
+        tags:
+            - v*
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, macos-latest, windows-latest]
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: 12
+            - name: Install esy
+              run: npm i -g esy
+
+            - name: Try to restore cache
+              uses: actions/cache@v1
+              with:
+                  path: ~/.esy/source
+                  key: source-${{ hashFiles('**/index.json') }}
+
+            - name: Esy install
+              run: esy install
+
+            - name: Print esy cache
+              id: print_esy_cache
+              run: node .github/workflows/print_esy_cache.js
+
+            - name: Try to restore build cache
+              id: deps-cache-macos
+              uses: actions/cache@v1
+              with:
+                  path: ${{ steps.print_esy_cache.outputs.esy_cache }}
+                  key: build-${{ matrix.os }}-${{ hashFiles('**/index.json') }}
+                  restore-keys: build-${{ runner.os }}-
+
+            - name: Esy build
+              run: |
+                  esy build
+                  # Cleanup build cache in case dependencies have changed
+                  esy cleanup .
+
+            - name: Esy release
+              run: esy release
+
+            - name: Save build bin
+              uses: actions/upload-artifact@v1
+              with:
+                  name: bin-${{ matrix.os }}
+                  path: _release/bin/ppx-figma
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: 12
+            - uses: actions/download-artifact@v1
+              with:
+                  name: bin-ubuntu-latest
+            - uses: actions/download-artifact@v1
+              with:
+                  name: bin-macos-latest
+            - uses: actions/download-artifact@v1
+              with:
+                  name: bin-windows-latest
+            - name: Create the directory structure and copy files
+              run: |
+                  mkdir -p _release/bins
+                  cp bin-ubuntu-latest/ppx-figma _release/bins/ppx-linux
+                  cp bin-macos-latest/ppx-figma _release/bins/ppx-macos
+                  cp bin-windows-latest/ppx-figma _release/bins/ppx-windows
+                  cp readme.md _release/readme.md
+                  cp .github/scripts/postinstall.js _release/postinstall.js
+                  node .github/scripts/package.json.js
+            - name: Publish to npm
+              run: |
+                  cd _release
+                  npm publish
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
