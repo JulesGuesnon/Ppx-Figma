@@ -102,13 +102,16 @@ You'll need to generate a token to allow the request on the document. Here are t
 
 -   Go on [Figma](https://www.figma.com/)
 -   Click on your profile on the top left
-    <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_profile.png?raw=true"/>
+
+<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_profile.png?raw=true"/>
 
 -   Then go in the settings
-    <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_settings.png?raw=true"/>
+
+<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_settings.png?raw=true"/>
 
 -   Finally generate a token
-    <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_generate.png?raw=true"/>
+
+<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_generate.png?raw=true"/>
 
 ### Get a document id
 
