@@ -4,13 +4,25 @@ Ppx-Figma will autogenerate styles based on [Bs-Css](https://github.com/reasonml
 
 ## :books: Table of contents
 
--   [:thinking: Why ?](##%20:thinking:%20Why%20?)
--   [:warning: Important informations](##%20:warning:%Important%20Informations)
--   [:building_construction: Figma architecture](##%20:building_construction:%20Figma%20architecture) - [Styleguide](###%20Styleguide) - [Fonts](###%20Fonts) - [Colors](###%20Colors)
--   [:wrench: Setup](##%20:wrench:%20Setup) - [Bs-Css setup](###%20Bs-Css%20setup) - [Get a Figma token](###%20Get%20a%20Figma%20token) - [Get a document id](###%20Get%20a%20document%20id)
--   [:fire: How to use it ? ](##%20:fire:%20%20How%20to%20use%20it%20?) - [Generated code](###%20Generated%20code) - [Fonts](####%20Fonts) - [Colors](####%20Colors) - [Apply the style](###%20Apply%20the%20style) - [What if I need to override a style ?](###What%20if%20I%20need%20to%20override%20a%20style%20?)
--   [:raising_hand: Some suggestions ?](##%20:raising_hand:%20Some%20suggestions%20?)
--   [:heart: Acknowledgements](##%20:heart:%20Acknowledgements)
+-   [:thinking: Why ?](#thinking-why-)
+-   [:warning: Important informations](#warning-important-informations)
+-   [:building_construction: Figma architecture](##building_construction-figma-architecture)
+    -   [Styleguide](#styleguide)
+    -   [Fonts](#fonts)
+    -   [Colors](#colors)
+-   [:wrench: Setup](#wrench-setup)
+    -   [Bs-Css setup](#bs-css-setup)
+    -   [Installation](#installation)
+    -   [Get a Figma token](#get-a-figma-token)
+    -   [Get a document id](#get-a-document-id)
+-   [:fire: How to use it ? ](#fire-how-to-use-it-)
+    -   [Generated code](#generated-code)
+        -   [Fonts](#fonts-1)
+        -   [Colors](#colors-1)
+    -   [Apply the style](#apply-the-style)
+    -   [What if I need to override a style ?](#what-if-i-need-to-override-a-style-)
+-   [:raising_hand: Some suggestions ?](#raising_hand-some-suggestions-)
+-   [:heart: Acknowledgements](#heart-acknowledgements)
 
 ## :thinking: Why ?
 
