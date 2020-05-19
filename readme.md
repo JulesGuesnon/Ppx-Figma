@@ -2,6 +2,16 @@
 
 Ppx-Figma will autogenerate styles based on [Bs-Css](https://github.com/reasonml-labs/bs-css) from a figma document for you.
 
+## :books: Table of contents
+
+-   [:thinking: Why ?](##%20:thinking:%20Why%20?)
+-   [:warning: Important informations](##%20:warning:%Important%20Informations)
+-   [:building_construction: Figma architecture](##%20:building_construction:%20Figma%20architecture) - [Styleguide](###%20Styleguide) - [Fonts](###%20Fonts) - [Colors](###%20Colors)
+-   [:wrench: Setup](##%20:wrench:%20Setup) - [Bs-Css setup](###%20Bs-Css%20setup) - [Get a Figma token](###%20Get%20a%20Figma%20token) - [Get a document id](###%20Get%20a%20document%20id)
+-   [:fire: How to use it ? ](##%20:fire:%20%20How%20to%20use%20it%20?) - [Generated code](###%20Generated%20code) - [Fonts](####%20Fonts) - [Colors](####%20Colors) - [Apply the style](###%20Apply%20the%20style) - [What if I need to override a style ?](###What%20if%20I%20need%20to%20override%20a%20style%20?)
+-   [:raising_hand: Some suggestions ?](##%20:raising_hand:%20Some%20suggestions%20?)
+-   [:heart: Acknowledgements](##%20:heart:%20Acknowledgements)
+
 ## :thinking: Why ?
 
 The process between developers and designers can be painful. Even if you work carefully and define your styles as variables, you still need to make sure you have the last version of the colors or fonts.
@@ -12,11 +22,9 @@ To simplify this process, I made a ppx that automatically import colors and font
 Before you dive in you need to be aware of some points:
 
 -   Ppx-Figma is based on Figma api:
-
     -   It will require an api key to make request (refer to the Setup part to know how to generate a key)
     -   A request is made at each build, so the bigger your Figma document is, the longer the request will be and the longer the build will be. it sounds pretty scary but don't worry there's a cache system and you have control on it
-
--   By using Ppx-Figma your designer will have to respect an architecture for his fonts and colors. This architecture has been thought with a designer but everyone has his habits. But if you see somethin-g to improve feel free to open an issue
+-   By using Ppx-Figma your designer will have to respect an architecture for his fonts and colors. This architecture has been thought with a designer but everyone has his habits. But if you see something to improve feel free to open an issue
 
 ## :building_construction: Figma architecture
 
@@ -48,7 +56,7 @@ Then to define your font styles, create a text, apply your style to it and there
 :warning: **Important informations**
 
 -   You don't have to "namespace" your styles, but it's a good way to classify them and it will have an impact on generated code
--   The text you write has an importance. For example: `body/regular` will have generate a variable called `regular` in the code. So if you write something like `.../whatever`, a variable called `whatever` will be generated
+-   The text you write has an importance. For example: `body/regular` will have generate a variable called `regular` in the code. So if you write something like `.../whatever`, a variable called `whatever` will be generated. Note that there's **forbidden name**, the one that Bs-Css use (e.g: style, width, fontWeight, bold, ...)
 -   **Only write text for your styles** and don't put annotation next to the styles (I'm planning to allow this is a next version)
 
 ### Colors
@@ -73,6 +81,7 @@ Finally name you rectangles or ellipses (here it's the name of the color, but it
 
 -   There's no "namespace" like the text, but if you think this is a needed feature open an issue to notify me
 -   Just like the fonts, **only put rectangles or ellipses** and don't put annotation next to them (I'm planning to allow this is a next version)
+-   Note that there's **forbidden name**, the one that Bs-Css use (e.g: style, width, fontWeight, bold, ...)
 
 :tada: That's all for the Figma part :tada:
 
@@ -107,15 +116,15 @@ You'll need to generate a token to allow the request on the document. Here are t
 -   Go on [Figma](https://www.figma.com/)
 -   Click on your profile on the top left
 
-<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_profile.png?raw=true"/>
+    <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_profile.png?raw=true"/>
 
 -   Then go in the settings
 
-<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_settings.png?raw=true"/>
+    <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_settings.png?raw=true"/>
 
 -   Finally generate a token
 
-<img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_generate.png?raw=true"/>
+    <img src="https://github.com/JulesGuesnon/Ppx-Figma/blob/master/screenshots/token_generate.png?raw=true"/>
 
 ### Get a document id
 
@@ -139,7 +148,18 @@ include Styleguide;
 
 -   \<your token\>: The token you generated in Figma
 -   \<the document id\>: The id that you get in the url
--   \<cache time\>: The cache time is composed of 2 things: the time and the unit: - Time is an `int` - The unit if one of the following: - `ms` (milliseconds) - `s` (seconds) - `m` (minutes) - `h` (hours) - `d` (day) - `mon` (month) - `y` (year) - Here is an example of a cache time: `"30m"` - **By default** the cache time is `"10m"`
+-   \<cache time\>: The cache time is composed of 2 things: the time and the unit:
+    -   Time is an `int`
+    -   The unit if one of the following:
+        -   `ms` (milliseconds)
+        -   `s` (seconds)
+        -   `m` (minutes)
+        -   `h` (hours)
+        -   `d` (day)
+        -   `mon` (month)
+        -   `y` (year)
+    -   Here is an example of a cache time: `"30m"`
+    -   **By default** the cache time is `"10m"`
 
 Example of the ppx:
 
@@ -217,7 +237,7 @@ module Styleguide = {
 
 ### Apply the style
 
-Last step is to apply the style
+Last step is to apply the style. Here is a brief example, but you better refer to [Bs-Css](https://github.com/reasonml-labs/bs-css) documentation for this part.
 
 ```reason
 [@react.component]
@@ -234,7 +254,7 @@ let make = () => {
 
 Rather than including the `Styleguide` module, you can let it wrap the `Fonts` and `Colors` modules and create you own modules and merge the existing styles
 
-````reason
+```reason
 open Css;
 
 %figma
@@ -258,4 +278,12 @@ module Fonts = {
 
 /* Here I rename the Colors module */
 module AnotherName = Styleguide.Colors;
-````
+```
+
+## :raising_hand: Some suggestions ?
+
+Feel free to open an issue if you have suggestions or you're facing an issue
+
+## :heart: Acknowledgements
+
+Thanks to Nemo Fazakerley, the designer that helped me to define the conventions for the Figma part. Go check his [Behance](https://www.behance.net/nemofazakerley)
