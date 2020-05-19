@@ -1,6 +1,6 @@
 (library
     (name lib)
-    (public_name bs-figma-ppx)
+    (public_name ppx-figma)
     (kind ppx_rewriter)
     (libraries ppxlib ssl cohttp cohttp-lwt-unix lwt lwt.unix yojson str)
     (preprocess (pps ppxlib.metaquot))

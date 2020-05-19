@@ -1,17 +1,30 @@
 {
-    "name": "bs-figma-ppx",
+    "name": "ppx-figma",
     "version": "0.1.0",
-    "description": "Example Reason Esy Project",
+    "description": "Ppx-figma import styles from Figma and generate css based on Bs-Css",
     "license": "MIT",
+    "repository": {
+        "url": "https://github.com/JulesGuesnon/Ppx-Figma"
+    },
+    "author": "Jules Guesnon <hello@julesguesnon.com>",
+    "keywords": [
+        "ReasonML",
+        "Reason",
+        "Figma",
+        "Ppx",
+        "Bs-Css"
+    ],
     "esy": {
         "build": "dune build -p #{self.name}",
         "NOTE": "Optional release Section. Customizes result of `esy release`",
         "release": {
-            "bin": ["bs-figma-ppx"]
+            "bin": [
+                "ppx-figma"
+            ]
         }
     },
     "scripts": {
-        "run": "esy x bs-figma-ppx"
+        "run": "esy x ppx-figma"
     },
     "dependencies": {
         "ocaml": "~4.06.100",
@@ -35,8 +48,16 @@
             "override": {
                 "buildsInSource": true,
                 "build": [
-                    ["ocaml", "configure.ml", "--libdir", "#{self.lib}"],
-                    ["ocaml", "bootstrap.ml"],
+                    [
+                        "ocaml",
+                        "configure.ml",
+                        "--libdir",
+                        "#{self.lib}"
+                    ],
+                    [
+                        "ocaml",
+                        "bootstrap.ml"
+                    ],
                     [
                         "./dune.exe",
                         "build",
