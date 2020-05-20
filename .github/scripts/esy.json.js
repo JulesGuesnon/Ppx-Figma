@@ -12,6 +12,6 @@ const esyJsonPath = path.join(__dirname, '..', '..', 'esy.json')
 
 fs.unlinkSync(esyJsonPath)
 
-fs.writeFileSync(path.join(__dirname, '..', '..', 'esy.json'), esyJson, {
+fs.writeFileSync(esyJsonPath, esyJson, {
     encoding: 'utf8',
 })

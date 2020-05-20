@@ -26,7 +26,7 @@ jobs:
 
             - name: Update esy resolution (Windows only)
               if: ${{ matrix.os == 'windows-latest'}}
-              run: node .github/workflows/scripts/esy.json.js
+              run: node .github/scripts/esy.json.js
 
             - name: Try to restore cache
               uses: actions/cache@v1
