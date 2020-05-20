@@ -73,9 +73,9 @@ jobs:
             - uses: actions/download-artifact@v1
               with:
                   name: bin-macos-latest
-            - uses: actions/download-artifact@v1
-              with:
-                  name: bin-windows-latest
+            # - uses: actions/download-artifact@v1
+            #   with:
+            #       name: bin-windows-latest
             - name: Create the directory structure and copy files
               run: |
                   mkdir -p _release/bins
