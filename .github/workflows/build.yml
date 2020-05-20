@@ -19,7 +19,7 @@ jobs:
 
             - name: Install openssl (Windows only)
               if: ${{ matrix.os == 'windows-latest'}}
-              run: choco install openssl
+              run: choco install openssl -y
 
             - name: Install esy
               run: npm i -g esy
@@ -85,9 +85,10 @@ jobs:
                   cp readme.md _release/readme.md
                   cp .github/scripts/postinstall.js _release/postinstall.js
                   node .github/scripts/package.json.js
+
             - name: Publish to npm
               run: |
                   cd _release
-                  npm publish
+                  npm publish --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
