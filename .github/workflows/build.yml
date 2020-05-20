@@ -24,6 +24,10 @@ jobs:
             - name: Install esy
               run: npm i -g esy
 
+            - name: Update esy resolution (Windows only)
+              if: ${{ matrix.os == 'windows-latest'}}
+              run: node .github/workflows/scripts/esy.json.js
+
             - name: Try to restore cache
               uses: actions/cache@v1
               with:
@@ -56,9 +60,17 @@ jobs:
 
             - name: Save build bin
               uses: actions/upload-artifact@v1
+              if: ${{ matrix.os != 'windows-latest'}}
               with:
                   name: bin-${{ matrix.os }}
                   path: _release/bin/ppx-figma
+
+            - name: Save build bin
+              uses: actions/upload-artifact@v1
+              if: ${{ matrix.os == 'windows-latest'}}
+              with:
+                  name: bin-${{ matrix.os }}
+                  path: _release/bin/ppx-figma.exe
     release:
         needs: build
         runs-on: ubuntu-latest
@@ -67,21 +79,23 @@ jobs:
             - uses: actions/setup-node@v1
               with:
                   node-version: 12
+                  registry-url: https://registry.npmjs.org
+
             - uses: actions/download-artifact@v1
               with:
                   name: bin-ubuntu-latest
             - uses: actions/download-artifact@v1
               with:
                   name: bin-macos-latest
-            # - uses: actions/download-artifact@v1
-            #   with:
-            #       name: bin-windows-latest
+            - uses: actions/download-artifact@v1
+              with:
+                  name: bin-windows-latest
             - name: Create the directory structure and copy files
               run: |
                   mkdir -p _release/bins
                   cp bin-ubuntu-latest/ppx-figma _release/bins/ppx-linux
                   cp bin-macos-latest/ppx-figma _release/bins/ppx-macos
-                  # cp bin-windows-latest/ppx-figma _release/bins/ppx-windows
+                  # cp bin-windows-latest/ppx-figma.exe _release/bins/ppx-windows
                   cp readme.md _release/readme.md
                   cp .github/scripts/postinstall.js _release/postinstall.js
                   node .github/scripts/package.json.js
@@ -89,6 +103,6 @@ jobs:
             - name: Publish to npm
               run: |
                   cd _release
-                  npm publish --access public
+                  npm publish
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

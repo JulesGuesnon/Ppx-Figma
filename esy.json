@@ -7,20 +7,12 @@
         "url": "https://github.com/JulesGuesnon/Ppx-Figma"
     },
     "author": "Jules Guesnon <hello@julesguesnon.com>",
-    "keywords": [
-        "ReasonML",
-        "Reason",
-        "Figma",
-        "Ppx",
-        "Bs-Css"
-    ],
+    "keywords": ["ReasonML", "Reason", "Figma", "Ppx", "Bs-Css"],
     "esy": {
         "build": "dune build -p #{self.name}",
         "NOTE": "Optional release Section. Customizes result of `esy release`",
         "release": {
-            "bin": [
-                "ppx-figma"
-            ]
+            "bin": ["ppx-figma"]
         }
     },
     "scripts": {
@@ -48,16 +40,8 @@
             "override": {
                 "buildsInSource": true,
                 "build": [
-                    [
-                        "ocaml",
-                        "configure.ml",
-                        "--libdir",
-                        "#{self.lib}"
-                    ],
-                    [
-                        "ocaml",
-                        "bootstrap.ml"
-                    ],
+                    ["ocaml", "configure.ml", "--libdir", "#{self.lib}"],
+                    ["ocaml", "bootstrap.ml"],
                     [
                         "./dune.exe",
                         "build",
