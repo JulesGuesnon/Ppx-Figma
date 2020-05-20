@@ -10,7 +10,7 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [ubuntu-latest, macos-latest, windows-latest]
+                os: [ubuntu-latest, macos-latest]
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-node@v1
@@ -81,7 +81,7 @@ jobs:
                   mkdir -p _release/bins
                   cp bin-ubuntu-latest/ppx-figma _release/bins/ppx-linux
                   cp bin-macos-latest/ppx-figma _release/bins/ppx-macos
-                  cp bin-windows-latest/ppx-figma _release/bins/ppx-windows
+                  # cp bin-windows-latest/ppx-figma _release/bins/ppx-windows
                   cp readme.md _release/readme.md
                   cp .github/scripts/postinstall.js _release/postinstall.js
                   node .github/scripts/package.json.js

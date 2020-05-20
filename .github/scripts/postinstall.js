@@ -25,6 +25,7 @@ const copyPlatformBinaries = (platformName) => {
 
 switch (platform) {
     case 'win32':
+        console.error('Windows is not supported for now')
         copyPlatformBinaries('windows')
         break
     case 'linux':
