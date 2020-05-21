@@ -17,10 +17,6 @@ jobs:
               with:
                   node-version: 12
 
-            - name: Install openssl (Windows only)
-              if: ${{ matrix.os == 'windows-latest'}}
-              run: choco install openssl -y
-
             - name: Install esy
               run: npm i -g esy
 
