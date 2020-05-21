@@ -91,7 +91,7 @@ jobs:
                   mkdir -p _release/bins
                   cp bin-ubuntu-latest/ppx-figma _release/bins/ppx-linux
                   cp bin-macos-latest/ppx-figma _release/bins/ppx-macos
-                  # cp bin-windows-latest/ppx-figma.exe _release/bins/ppx-windows
+                  cp bin-windows-latest/ppx-figma.exe _release/bins/ppx-windows
                   cp readme.md _release/readme.md
                   cp .github/scripts/postinstall.js _release/postinstall.js
                   node .github/scripts/package.json.js

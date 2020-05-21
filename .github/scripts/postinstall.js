@@ -13,7 +13,7 @@ function copyFileSync(sourcePath, destPath) {
 }
 
 const copyPlatformBinaries = (platformName) => {
-    const sourcePath = path.join(__dirname, 'bins', `ppx-figma-${platformName}`)
+    const sourcePath = path.join(__dirname, 'bins', `ppx-${platformName}`)
     const destPath = path.join(__dirname, 'ppx')
 
     if (fs.existsSync(destPath)) {
@@ -25,7 +25,6 @@ const copyPlatformBinaries = (platformName) => {
 
 switch (platform) {
     case 'win32':
-        console.error('Windows is not supported for now')
         copyPlatformBinaries('windows')
         break
     case 'linux':
