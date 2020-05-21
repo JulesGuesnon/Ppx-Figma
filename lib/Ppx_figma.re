@@ -25,7 +25,7 @@ let expand = (~loc, ~path as _, args: list(string)) => {
   let time =
     switch (List.nth(args, 2)) {
     | time => Time.ofString(time)
-    | exception _ => Time.ofString("10m")
+    | exception _ => Time.ofString("30m")
     };
 
   let res =
