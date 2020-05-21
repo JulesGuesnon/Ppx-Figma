@@ -51,22 +51,11 @@ jobs:
                   # Cleanup build cache in case dependencies have changed
                   esy cleanup .
 
-            - name: Esy release
-              run: esy release
-
             - name: Save build bin
               uses: actions/upload-artifact@v1
-              if: ${{ matrix.os != 'windows-latest'}}
               with:
                   name: bin-${{ matrix.os }}
-                  path: _release/bin/ppx-figma
-
-            - name: Save build bin
-              uses: actions/upload-artifact@v1
-              if: ${{ matrix.os == 'windows-latest'}}
-              with:
-                  name: bin-${{ matrix.os }}
-                  path: _release/bin/ppx-figma.exe
+                  path: _build/default/bin/PpxFigma.exe
     release:
         needs: build
         runs-on: ubuntu-latest
@@ -89,10 +78,11 @@ jobs:
             - name: Create the directory structure and copy files
               run: |
                   mkdir -p _release/bins
-                  cp bin-ubuntu-latest/ppx-figma _release/bins/ppx-linux
-                  cp bin-macos-latest/ppx-figma _release/bins/ppx-macos
-                  cp bin-windows-latest/ppx-figma.exe _release/bins/ppx-windows
+                  cp bin-ubuntu-latest/PpxFigma.exe _release/bins/ppx-linux
+                  cp bin-macos-latest/PpxFigma.exe _release/bins/ppx-macos
+                  cp bin-windows-latest/PpxFigma.exe _release/bins/ppx-windows
                   cp readme.md _release/readme.md
+                  cp LICENSE _release/LICENSE
                   cp .github/scripts/postinstall.js _release/postinstall.js
                   node .github/scripts/package.json.js
 

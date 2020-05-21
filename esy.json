@@ -10,9 +10,9 @@
     "keywords": ["ReasonML", "Reason", "Figma", "Ppx", "Bs-Css"],
     "esy": {
         "build": "dune build -p #{self.name}",
-        "NOTE": "Optional release Section. Customizes result of `esy release`",
+        "buildsInSource": "_build",
         "release": {
-            "bin": ["ppx-figma"]
+            "releasedBinaries": ["ppx-figma"]
         }
     },
     "scripts": {
