@@ -34,7 +34,7 @@ To simplify this process, I made a ppx that automatically import colors and font
 Before you dive in you need to be aware of some points:
 
 -   Ppx-Figma is based on Figma api:
-    -   It will require an api key to make request (refer to the Setup part to know how to generate a key)
+    -   It will require an api key to make request (refer to the [Setup](#get-a-figma-token) part to know how to generate a key)
     -   A request is made at each build, so the bigger your Figma document is, the longer the request will be and the longer the build will be. it sounds pretty scary but don't worry there's a cache system and you have control on it
 -   By using Ppx-Figma your designer will have to respect an architecture for his fonts and colors. This architecture has been thought with a designer but everyone has his habits. But if you see something to improve feel free to open an issue
 
@@ -79,7 +79,7 @@ Then to define your font styles, create a text, apply your style to it and there
 
 -   You don't have to "namespace" your styles, but it's a good way to classify them and it will have an impact on generated code
 -   The text you write has an importance. For example: `body/regular` will have generate a variable called `regular` in the code. So if you write something like `.../whatever`, a variable called `whatever` will be generated. Note that there's **forbidden name**, the one that Bs-Css use (e.g: style, width, fontWeight, bold, ...)
--   **Only write text for your styles** and don't put annotation next to the styles (I'm planning to allow this is a next version)
+-   **Only write text for your styles** and don't put annotation next to the styles (I'm planning to allow this in a next version)
 
 ### Colors
 
@@ -109,8 +109,8 @@ Finally name you rectangles or ellipses (here it's the name of the color, but it
 
 :warning: **Important informations**
 
--   There's no "namespace" like the text, but if you think this is a needed feature open an issue to notify me
--   Just like the fonts, **only put rectangles or ellipses** and don't put annotation next to them (I'm planning to allow this is a next version)
+-   There's no "namespace" like the text, but it might be the case in the future
+-   Just like the fonts, **only put rectangles or ellipses** and don't put annotation next to them (I'm planning to allow this in a next version)
 -   Note that there's **forbidden name**, the one that Bs-Css use (e.g: style, width, fontWeight, bold, ...)
 
 :tada: That's all for the Figma part :tada:
@@ -119,7 +119,7 @@ Finally name you rectangles or ellipses (here it's the name of the color, but it
 
 ### Bs-Css setup
 
-Make sure you have [Bs-Css](https://github.com/reasonml-labs/bs-css) installed. **_If you don't_**, refer to [their documentation](https://github.com/reasonml-labs/bs-css).
+Make sure you have [Bs-Css](https://github.com/reasonml-labs/bs-css) installed. **If you don't**, refer to [their documentation](https://github.com/reasonml-labs/bs-css).
 
 ### Installation
 
@@ -197,8 +197,10 @@ include Styleguide;
         -   `d` (day)
         -   `mon` (month)
         -   `y` (year)
-    -   Here is an example of a cache time: `"30m"`
-    -   **By default** the cache time is `"10m"`
+    -   Here is an example of a cache time: `"23h"`
+    -   **By default** the cache time is `"30m"`
+    -   It define the time between the updates of the styles
+    -   If you change the time, it will delete the current cache and create a new one. So if you need to **force update**, this is the way to do it
 
 Example of the ppx:
 
