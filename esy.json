@@ -1,6 +1,6 @@
 {
     "name": "ppx-figma",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Ppx-figma import styles from Figma and generate css based on Bs-Css",
     "license": "MIT",
     "repository": {
