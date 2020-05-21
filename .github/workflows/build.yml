@@ -54,7 +54,9 @@ jobs:
             - name: Esy Release
               run: |
                   esy release
-                  node _release/esyInstallRelease.js
+                  cd _release
+                  node esyInstallRelease.js
+                  cd ..
 
             - name: Copy bin to the root of _release
               if: ${{ matrix.os != 'windows-latest'}}
