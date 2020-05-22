@@ -19,7 +19,7 @@ jobs:
               run: |
                   # brew uninstall openssl
                   # brew install openssl@1.1 --force
-                  brew link --force /usr/local/opt/openssl@1.1/bin/openssl
+                  brew link --force openssl@1.1
 
             - name: Install esy
               run: npm i -g esy
