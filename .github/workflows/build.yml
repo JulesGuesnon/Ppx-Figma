@@ -17,14 +17,9 @@ jobs:
             - name: Upgrade openssl (Mac only)
               if: ${{ matrix.os == 'macos-latest'}}
               run: |
-                  ls /usr/local/opt/openssl/lib
-                  echo "---"
-                  ls /usr/local/opt/openssl@1.1/lib
-                  sudo cp -r /usr/local/opt/openssl@1.1 /usr/local/opt/openssl
-                  echo "------"
-                  ls /usr/local/opt/openssl/lib
-                  echo "---"
-                  ls /usr/local/opt/openssl@1.1/lib
+                  # brew uninstall openssl
+                  # brew install openssl@1.1 --force
+                  brew link --force /usr/local/opt/openssl@1.1/bin/openssl
 
             - name: Install esy
               run: npm i -g esy
