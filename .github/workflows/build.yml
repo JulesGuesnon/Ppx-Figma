@@ -22,7 +22,8 @@ jobs:
                   rm -rf /usr/local/etc/openssl
                   brew install openssl@1.1 --force
                   brew link --force openssl@1.1
-                  ls /usr/local/opt/openssl/lib
+                  echo "export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"" >> ~/.bash_profile
+                  echo "export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"" >> ~/.bash_profile
 
             - name: Install esy
               run: npm i -g esy
