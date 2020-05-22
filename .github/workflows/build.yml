@@ -14,13 +14,6 @@ jobs:
               with:
                   node-version: 12
 
-            - name: Upgrade openssl (Mac only)
-              if: ${{ matrix.os == 'macos-latest'}}
-              run: |
-                  # brew uninstall openssl
-                  # brew install openssl@1.1 --force
-                  brew link --force openssl@1.1
-
             - name: Install esy
               run: npm i -g esy
 
@@ -55,23 +48,8 @@ jobs:
                   # Cleanup build cache in case dependencies have changed
                   esy cleanup .
 
-            - name: Esy Release
-              run: |
-                  esy release
-                  cd _release
-                  node esyInstallRelease.js
-                  cd ..
-
-            - name: Copy bin to the root of _release
-              if: ${{ matrix.os != 'windows-latest'}}
-              run: cp _release/3/i/$(ls _release/3/i)/bin/ppx-figma _release/ppx
-
-            - name: Copy bin to the root of _release (Windows version)
-              if: ${{ matrix.os == 'windows-latest'}}
-              run: cp _release/3/i/$(ls _release/3/i)/bin/ppx-figma.exe _release/ppx
-
             - name: Save build bin
               uses: actions/upload-artifact@v1
               with:
                   name: bin-${{ matrix.os }}
-                  path: _release/ppx
+                  path: _build/default/bin/PpxFigma.exe

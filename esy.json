@@ -20,8 +20,7 @@
     },
     "dependencies": {
         "ocaml": "~4.06.100",
-        "@opam/ssl": "*",
-        "@opam/lwt_ssl": "*",
+        "@opam/tls": "*",
         "@opam/dune": "*",
         "@opam/reason": "*",
         "@opam/ppxlib": "*",
