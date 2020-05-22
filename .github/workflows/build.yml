@@ -47,7 +47,7 @@ jobs:
               run: |
                   esy build
                   # Cleanup build cache in case dependencies have changed
-                  esy cleanup .
+                  # esy cleanup .
 
             - name: Logging
               run: |
