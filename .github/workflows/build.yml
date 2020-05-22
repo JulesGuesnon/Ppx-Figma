@@ -56,8 +56,16 @@ jobs:
                   ls _build/default
                   ls _build/default/bin
 
+            - name: Save build bin (Windows edition)
+              uses: actions/upload-artifact@v1
+              if: ${{ matrix.os == 'windows-latest'}}
+              with:
+                  name: bin-${{ matrix.os }}
+                  path: _esy/default/build/default/bin/PpxFigma.exe
+
             - name: Save build bin
               uses: actions/upload-artifact@v1
+              if: ${{ matrix.os != 'windows-latest'}}
               with:
                   name: bin-${{ matrix.os }}
                   path: _build/default/bin/PpxFigma.exe
