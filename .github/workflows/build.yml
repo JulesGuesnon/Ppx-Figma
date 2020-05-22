@@ -52,9 +52,9 @@ jobs:
             - name: Logging
               run: |
                   ls .
-                  ls _build
-                  ls _build/default
-                  ls _build/default/bin
+                  ls _esy
+                  ls _esy/default
+                  ls -esy/default/build/default
 
             - name: Save build bin (Windows edition)
               uses: actions/upload-artifact@v1
