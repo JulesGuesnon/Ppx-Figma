@@ -20,7 +20,7 @@ jobs:
                   ls /usr/local/opt/openssl/lib
                   echo "---"
                   ls /usr/local/opt/openssl@1.1/lib
-                  cp -avr /usr/local/opt/openssl@1.1 /usr/local/opt/openssl
+                  sudo cp -r /usr/local/opt/openssl@1.1 /usr/local/opt/openssl
                   echo "------"
                   ls /usr/local/opt/openssl/lib
                   echo "---"
