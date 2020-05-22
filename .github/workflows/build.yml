@@ -16,14 +16,7 @@ jobs:
 
             - name: Upgrade openssl (Mac only)
               if: ${{ matrix.os == 'macos-latest'}}
-              run: |
-                  brew uninstall openssl
-                  rm -rf /usr/local/etc/openssl@1.1
-                  rm -rf /usr/local/etc/openssl
-                  brew install openssl@1.1 --force
-                  brew link --force openssl@1.1
-                  echo "export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"" >> ~/.bash_profile
-                  echo "export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"" >> ~/.bash_profile
+              run: ls /usr/local/opt/openssl@1.1/lib
 
             - name: Install esy
               run: npm i -g esy
