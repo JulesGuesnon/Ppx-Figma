@@ -37,7 +37,7 @@ Before you dive in you need to be aware of some points:
     -   It will require an api key to make request (refer to the [Setup](#get-a-figma-token) part to know how to generate a key)
     -   A request is made at each build, so the bigger your Figma document is, the longer the request will be and the longer the build will be. it sounds pretty scary but don't worry there's a cache system and you have control on it
 -   By using Ppx-Figma your designer will have to respect an architecture for his fonts and colors. This architecture has been thought with a designer but everyone has his habits. But if you see something to improve feel free to open an issue
--   For now it's a mac and linux only ppx. I'm working on windows, but it's not the case for now
+-   For now it's a mac and linux only ppx. I'm working on making a build for windows, but it's still wip 
 
 ## :building_construction: Figma architecture
 
