@@ -7,7 +7,7 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [windows-latest]
+                os: [macos-latest, ubuntu-latest, windows-latest]
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-node@v1
@@ -18,9 +18,9 @@ jobs:
             - name: Install esy
               run: npm i -g esy
 
-            # - name: Update esy resolution (Windows only)
-            #   if: ${{ matrix.os == 'windows-latest'}}
-            #   run: node .github/scripts/esy.json.js
+            - name: Update esy resolution (Windows only)
+              if: ${{ matrix.os == 'windows-latest'}}
+              run: node .github/scripts/esy.json.js
 
             - name: Try to restore cache
               uses: actions/cache@v1
@@ -48,13 +48,6 @@ jobs:
                   esy build
                   # Cleanup build cache in case dependencies have changed
                   # esy cleanup .
-
-            - name: Logging
-              run: |
-                  ls .
-                  ls _esy
-                  ls _esy/default
-                  ls -esy/default/build/default
 
             - name: Save build bin (Windows edition)
               uses: actions/upload-artifact@v1
