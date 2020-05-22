@@ -17,8 +17,10 @@ jobs:
             - name: Upgrade openssl (Mac only)
               if: ${{ matrix.os == 'macos-latest'}}
               run: |
+                  ls /usr/local/opt/openssl*
                   rm -rf /usr/local/opt/openssl/
-                  cp /usr/local/opt/openssl@1.1/ /usr/local/opt/openssl/
+                  ls /usr/local/opt/openssl*
+                  cp /usr/local/opt/openssl@1.1 /usr/local/opt/openssl
 
             - name: Install esy
               run: npm i -g esy
