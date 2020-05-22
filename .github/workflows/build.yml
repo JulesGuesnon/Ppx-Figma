@@ -14,11 +14,9 @@ jobs:
               with:
                   node-version: 12
 
-            - name: Upgrade openssl (Mac only)
+            - name: Ls openssl
               if: ${{ matrix.os == 'macos-latest'}}
-              run: |
-                  brew uninstall openssl
-                  brew install openssl@1.1 --force
+              run: ls /usr/local/opt/openssl/lib
 
             - name: Install esy
               run: npm i -g esy
