@@ -18,7 +18,7 @@ jobs:
               if: ${{ matrix.os == 'macos-latest'}}
               run: |
                   ls /usr/local/opt/openssl/lib
-                  cp /usr/local/opt/openssl@1.1 /usr/local/opt/openssl
+                  cp -r /usr/local/opt/openssl@1.1 /usr/local/opt/openssl
                   ls /usr/local/opt/openssl/lib
 
             - name: Install esy
