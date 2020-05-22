@@ -1,3 +1,5 @@
+**I'm still working on making build passing for publish**
+
 # :art: Ppx-Figma
 
 Ppx-Figma will autogenerate styles based on [Bs-Css](https://github.com/reasonml-labs/bs-css) from a figma document for you.
