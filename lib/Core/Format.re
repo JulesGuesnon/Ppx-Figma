@@ -213,7 +213,7 @@ let componentNodesToAst = (~loc, components) => {
                  ],
                )
            ],
-           ...component.children |> List.map(a => a),
+           /* ...component.children |> List.map(a => a), */
          ],
        )
      });

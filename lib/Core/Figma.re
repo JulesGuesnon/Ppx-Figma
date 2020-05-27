@@ -26,6 +26,13 @@ module Types = {
     color: color_,
   };
 
+  type absoluteBoundingBox = {
+    x: float,
+    y: float,
+    width: int,
+    height: int,
+  };
+
   type strokeType =
     | SOLID;
 
@@ -54,6 +61,14 @@ module Types = {
   type size = {
     x: float,
     y: float,
+  };
+
+  type effect = {
+    type_: string,
+    visible: bool,
+    color: color_,
+    offset: size,
+    radius: int,
   };
 
   type vector = {
@@ -113,6 +128,8 @@ module Types = {
     strokeAlign,
     fills: paints,
     rectangleCornerRadii: list(float),
+    absoluteBoundingBox,
+    effects: list(effect),
   };
 
   type canvasChild =
@@ -192,6 +209,13 @@ module Parser = {
           ),
         )
       };
+
+  let parseAbsoluteBoundingBox = absoluteBoundingBox => {
+    x: absoluteBoundingBox |> member("x") |> to_float,
+    y: absoluteBoundingBox |> member("y") |> to_float,
+    width: absoluteBoundingBox |> member("width") |> to_int,
+    height: absoluteBoundingBox |> member("height") |> to_int,
+  };
 
   let parsePaint = paint => {
     {
@@ -276,6 +300,14 @@ module Parser = {
 
          (key, value);
        });
+  };
+
+  let parseEffect = effect => {
+    type_: effect |> member("type") |> to_string,
+    visible: effect |> member("visible") |> to_bool,
+    color: effect |> member("color") |> parseColor_,
+    offset: effect |> member("offset") |> parseSize,
+    radius: effect |> member("radius") |> to_int,
   };
 
   let parseVector = node => {
@@ -383,6 +415,15 @@ module Parser = {
         |> member("rectangleCornerRadii")
         |> to_list
         |> List.map(to_float),
+      absoluteBoundingBox:
+        componentNode
+        |> member("parseAbsoluteBoundingBox")
+        |> parseAbsoluteBoundingBox,
+      effects:
+        componentNode
+        |> member("effects")
+        |> to_list
+        |> List.map(parseEffect),
     };
   };
 
