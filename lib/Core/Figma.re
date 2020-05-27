@@ -10,7 +10,7 @@ module Types = {
     a: float,
   };
 
-  type paint =
+  type paintType =
     | SOLID
     | GRADIENT_LINEAR
     | GRADIENT_RADIAL
@@ -18,6 +18,16 @@ module Types = {
     | GRADIENT_DIAMOND
     | IMAGE
     | EMOJI;
+
+  type paint = {
+    type_: paintType,
+    visible: option(bool),
+    opacity: float,
+    color: color_,
+  };
+
+  type strokeType =
+    | SOLID;
 
   type paints = list(paint);
 
@@ -41,21 +51,46 @@ module Types = {
     characters: string,
   };
 
-  type fill = {color: color_};
+  type size = {
+    x: float,
+    y: float,
+  };
 
-  type color = {
+  type vector = {
     id: string,
     name: string,
     visible: option(bool),
     type_: string,
-    fills: list(fill),
+    fills: paints,
+    strokes: paints,
+    strokeAlign,
+    opacity: option(float),
+    size,
+    styles: list((string, primitive)),
+  };
+
+  type rectangle = {
+    id: string,
+    name: string,
+    visible: option(bool),
+    type_: string,
+    fills: paints,
+    strokes: paints,
+    strokeAlign,
+    opacity: option(float),
+    size,
+    styles: list((string, primitive)),
+    cornerRadius: float,
+    rectangleCornerRadii: list(float),
   };
 
   type frameChild =
-    | Color(color)
-    | Text(text);
-
-  type frame = {
+    | Rectangle(rectangle)
+    | Vector(vector)
+    | Text(text)
+    | Group(frame)
+    | Component(component)
+  and frame = {
     id: string,
     name: string,
     visible: option(bool),
@@ -65,14 +100,31 @@ module Types = {
     backgroundColor: color_,
     strokeWeight: float,
     strokeAlign,
+  }
+  and component = {
+    id: string,
+    name: string,
+    visible: option(bool),
+    type_: string,
+    children: list(frameChild),
+    backgroundColor: color_,
+    strokeWeight: float,
+    strokes: paints,
+    strokeAlign,
+    fills: paints,
+    rectangleCornerRadii: list(float),
   };
+
+  type canvasChild =
+    | Component(component)
+    | Frame(frame);
 
   type canvas = {
     id: string,
     name: string,
     visible: option(bool),
     type_: string,
-    children: list(frame),
+    children: list(canvasChild),
     backgroundColor: color_,
   };
 
@@ -86,9 +138,13 @@ module Types = {
 
   type nodeType =
     | NodeText
-    | NodeColor
+    | NodeVector
+    | NodeRectangle
+    | NodeGroup
     | NodeDocument
-    | NodeCanvas;
+    | NodeCanvas
+    | NodeComponent
+    | NodeFrame;
 };
 open Types;
 
@@ -99,6 +155,7 @@ module Parser = {
   exception StrokeAlignExn(string);
   exception NodeTypeExn(string);
   exception StyleValueExn(string);
+  exception CanvasChildExn(string);
 
   let invalidCssKeys = [
     "fontPostScriptName",
@@ -118,21 +175,30 @@ module Parser = {
     a: color |> member("a") |> to_float,
   };
 
+  let parsePaintType: Yojson.Basic.t => paintType =
+    paintType =>
+      switch (to_string(paintType)) {
+      | "SOLID" => SOLID
+      | "GRADIENT_LINEAR" => GRADIENT_LINEAR
+      | "GRADIENT_RADIAL" => GRADIENT_RADIAL
+      | "GRADIENT_ANGULAR" => GRADIENT_ANGULAR
+      | "GRADIENT_DIAMOND" => GRADIENT_DIAMOND
+      | "IMAGE" => IMAGE
+      | "EMOJI" => EMOJI
+      | str =>
+        raise(
+          PaintExn(
+            "The following paintType: " ++ str ++ " isn't a valid one",
+          ),
+        )
+      };
+
   let parsePaint = paint => {
-    switch (to_string(paint)) {
-    | "SOLID" => SOLID
-    | "GRADIENT_LINEAR" => GRADIENT_LINEAR
-    | "GRADIENT_RADIAL" => GRADIENT_RADIAL
-    | "GRADIENT_ANGULAR" => GRADIENT_ANGULAR
-    | "GRADIENT_DIAMOND" => GRADIENT_DIAMOND
-    | "IMAGE" => IMAGE
-    | "EMOJI" => EMOJI
-    | value =>
-      raise(
-        PaintExn(
-          "The following value is does not belongs to type paint: " ++ value,
-        ),
-      )
+    {
+      type_: paint |> member("type") |> parsePaintType,
+      visible: paint |> member("visible") |> to_bool_option,
+      opacity: paint |> member("opacity") |> to_float,
+      color: paint |> member("color") |> parseColor_,
     };
   };
 
@@ -152,29 +218,30 @@ module Parser = {
   };
 
   let getNodeType = node => {
-    switch (node |> member("type") |> to_string) {
+    let type_ = node |> member("type") |> to_string;
+    switch (type_) {
     | "DOCUMENT" => NodeDocument
     | "CANVAS" => NodeCanvas
     | "TEXT" => NodeText
-    | "ELLIPSE"
-    | "RECTANGLE" => NodeColor
+    | "RECTANGLE" => NodeRectangle
+    | "GROUP" => NodeGroup
+    | "STAR"
+    | "LINE"
+    | "REGULAR_POLYGON"
+    | "ELLIPSE" => NodeVector
+    | "COMPONENT" => NodeComponent
     | _ => raise(NodeTypeExn("The node type couldn't be found"))
     };
   };
 
-  let parseFill = fill => {color: fill |> member("color") |> parseColor_};
-
-  let parseColor = node => {
-    id: node |> member("id") |> to_string,
-    name: node |> member("name") |> to_string,
-    visible: node |> member("visible") |> to_bool_option,
-    type_: node |> member("type") |> to_string,
-    fills: node |> member("fills") |> to_list |> List.map(parseFill),
+  let parseSize = node => {
+    x: node |> member("x") |> to_float,
+    y: node |> member("y") |> to_float,
   };
 
-  let parseText = textNode => {
-    let stylesKey = textNode |> member("style") |> keys;
-    let stylesValues = textNode |> member("style") |> values;
+  let parseStyles = node => {
+    let stylesKey = node |> keys;
+    let stylesValues = node |> values;
     let styles = ref([]);
 
     stylesKey
@@ -197,31 +264,61 @@ module Parser = {
          styles := styles^ |> List.append([(key, value)]);
        });
 
+    styles^
+    |> List.filter(((key, _)) =>
+         !List.exists(invalidKey => key == invalidKey, invalidCssKeys)
+       )
+    |> List.map(((key, value)) => {
+         let (_, key) =
+           try(List.find(((oldKey, _)) => oldKey == key, toRewriteCssKeys)) {
+           | _ => ("", key)
+           };
+
+         (key, value);
+       });
+  };
+
+  let parseVector = node => {
+    id: node |> member("id") |> to_string,
+    name: node |> member("name") |> to_string,
+    visible: node |> member("visible") |> to_bool_option,
+    type_: node |> member("type") |> to_string,
+    fills: node |> member("fills") |> to_list |> List.map(parsePaint),
+    strokes: node |> member("strokes") |> to_list |> List.map(parsePaint),
+    strokeAlign: node |> member("strokeAlign") |> parseStrokeAlign,
+    opacity: node |> member("opacity") |> to_float_option,
+    size: node |> member("size") |> parseSize,
+    styles: node |> member("styles") |> parseStyles,
+  };
+
+  let parseRectangle = node => {
+    id: node |> member("id") |> to_string,
+    name: node |> member("name") |> to_string,
+    visible: node |> member("visible") |> to_bool_option,
+    type_: node |> member("type") |> to_string,
+    fills: node |> member("fills") |> to_list |> List.map(parsePaint),
+    strokes: node |> member("strokes") |> to_list |> List.map(parsePaint),
+    strokeAlign: node |> member("strokeAlign") |> parseStrokeAlign,
+    opacity: node |> member("opacity") |> to_float_option,
+    size: node |> member("size") |> parseSize,
+    styles: node |> member("styles") |> parseStyles,
+    cornerRadius: node |> member("cornerRadius") |> to_float,
+    rectangleCornerRadii:
+      node |> member("rectangleCornerRadii") |> to_list |> List.map(to_float),
+  };
+
+  let parseText = textNode => {
     {
       id: textNode |> member("id") |> to_string,
       name: textNode |> member("name") |> to_string,
       visible: textNode |> member("visible") |> to_bool_option,
       type_: textNode |> member("type") |> to_string,
       characters: textNode |> member("characters") |> to_string,
-      styles:
-        styles^
-        |> List.filter(((key, _)) =>
-             !List.exists(invalidKey => key == invalidKey, invalidCssKeys)
-           )
-        |> List.map(((key, value)) => {
-             let (_, key) =
-               try(
-                 List.find(((oldKey, _)) => oldKey == key, toRewriteCssKeys)
-               ) {
-               | _ => ("", key)
-               };
-
-             (key, value);
-           }),
+      styles: textNode |> member("styles") |> parseStyles,
     };
   };
 
-  let parseFrame = frameNode => {
+  let rec parseFrame = frameNode => {
     let children =
       frameNode
       |> member("children")
@@ -230,7 +327,10 @@ module Parser = {
            let nodeType = getNodeType(node);
            switch (nodeType) {
            | NodeText => Text(parseText(node))
-           | NodeColor => Color(parseColor(node))
+           | NodeRectangle => Rectangle(parseRectangle(node))
+           | NodeVector => Vector(parseVector(node))
+           | NodeGroup => Group(parseFrame(node))
+           | NodeComponent => Component(parseComponent(node))
            | _ => raise(NodeTypeExn("Node type not supported"))
            };
          });
@@ -246,6 +346,57 @@ module Parser = {
       strokeWeight: frameNode |> member("strokeWeight") |> to_float,
       strokeAlign: frameNode |> member("strokeAlign") |> parseStrokeAlign,
     };
+  }
+
+  and parseComponent = componentNode => {
+    let children =
+      componentNode
+      |> member("children")
+      |> to_list
+      |> List.map(node => {
+           let nodeType = getNodeType(node);
+           switch (nodeType) {
+           | NodeText => Text(parseText(node))
+           | NodeVector => Vector(parseVector(node))
+           | NodeRectangle => Rectangle(parseRectangle(node))
+           | NodeGroup => Group(parseFrame(node))
+           | _ => raise(NodeTypeExn("Node type not supported"))
+           };
+         });
+
+    {
+      id: componentNode |> member("id") |> to_string,
+      name: componentNode |> member("name") |> to_string,
+      visible: componentNode |> member("visible") |> to_bool_option,
+      type_: componentNode |> member("type") |> to_string,
+      children,
+      backgroundColor:
+        componentNode |> member("backgroundColor") |> parseColor_,
+      strokeWeight: componentNode |> member("strokeWeight") |> to_float,
+      strokes:
+        componentNode |> member("strokes") |> to_list |> List.map(parsePaint),
+      strokeAlign: componentNode |> member("strokeAlign") |> parseStrokeAlign,
+      fills:
+        componentNode |> member("fills") |> to_list |> List.map(parsePaint),
+      rectangleCornerRadii:
+        componentNode
+        |> member("rectangleCornerRadii")
+        |> to_list
+        |> List.map(to_float),
+    };
+  };
+
+  let parseCanvasChild = canvasChild => {
+    switch (canvasChild |> member("type") |> to_string) {
+    | "COMPONENT" => Component(parseComponent(canvasChild))
+    | "FRAME" => Frame(parseFrame(canvasChild))
+    | str =>
+      raise(
+        CanvasChildExn(
+          "The type: " ++ str ++ "isn't supported as a canvasChild",
+        ),
+      )
+    };
   };
 
   let parseCanvas = canvasNode => {
@@ -256,7 +407,21 @@ module Parser = {
       type_: canvasNode |> member("type") |> to_string,
       backgroundColor: canvasNode |> member("backgroundColor") |> parseColor_,
       children:
-        canvasNode |> member("children") |> to_list |> List.map(parseFrame),
+        canvasNode
+        |> member("children")
+        |> to_list
+        |> List.map(node => {
+             switch (getNodeType(node)) {
+             | NodeComponent => Component(parseComponent(node))
+             | NodeFrame => Frame(parseFrame(node))
+             | _ =>
+               raise(
+                 NodeTypeExn(
+                   "Canvas child node wasn't of type Component or Frame",
+                 ),
+               )
+             }
+           }),
     };
   };
 
@@ -285,8 +450,17 @@ let getCanvasByName = (~name, document: document) =>
   };
 
 let getFrameByName = (~name, canvas: canvas) =>
-  switch (canvas.children |> List.find((frame: frame) => frame.name == name)) {
-  | v => Some(v)
+  switch (
+    canvas.children
+    |> List.find(frameChild => {
+         switch (frameChild) {
+         | Frame(frame) => frame.name == name
+         | _ => false
+         }
+       })
+  ) {
+  | Frame(v) => Some(v)
+  | _ => None
   | exception _ => None
   };
 
@@ -324,11 +498,12 @@ let getColors = document => {
         f.children
         |> List.map(child => {
              switch (child) {
-             | Color(c) => c
+             | Rectangle(r) => (r.name, r.fills)
+             | Vector(v) => (v.name, v.fills)
              | _ =>
                raise(
                  Parser.NodeTypeExn(
-                   "Error while getting texts: a node wasn't of type text",
+                   "Error while getting colors: a node wasn't of type vector",
                  ),
                )
              }
@@ -339,8 +514,59 @@ let getColors = document => {
   | None => None
   };
 };
-let unitOfKeyAndValue = (css, value) =>
-  switch (css, value) {
+
+exception GetComponentsFilterExn(string);
+
+let extractComponent = (child: frameChild) =>
+  switch (child) {
+  | Component(c) => c
+  | _ =>
+    raise(
+      GetComponentsFilterExn(
+        "An error occured when getting components: the children of the frames are supposed to be filtered and only contains components, but it wasn't the case",
+      ),
+    )
+  };
+
+let rec getComponentsOfFrameChild = children => {
+  [
+    children
+    |> List.filter((child: frameChild) =>
+         switch (child) {
+         | Component(_) => true
+         | _ => false
+         }
+       )
+    |> List.map(extractComponent),
+    children
+    |> List.filter((child: frameChild) =>
+         switch (child) {
+         | Component(_) => false
+         | _ => true
+         }
+       )
+    |> getComponentsOfFrameChild,
+  ]
+  |> List.flatten;
+};
+
+let getComponents = document => {
+  document.children
+  |> List.map((canvas: canvas) => {
+       canvas.children
+       |> List.map((child: canvasChild) =>
+            switch (child) {
+            | Component(c) => [c]
+            | Frame(f) => f.children |> getComponentsOfFrameChild
+            }
+          )
+       |> List.flatten
+     })
+  |> List.flatten;
+};
+
+let unitOfKeyAndValue = (cssProps, value) =>
+  switch (cssProps, value) {
   | ("fontFamily", String(s)) => (
       (~loc) =>
         Utils.Ast.makePolyVariant(

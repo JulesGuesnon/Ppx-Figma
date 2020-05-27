@@ -3,9 +3,10 @@ open Figma.Types;
 
 exception Invalid_argument(string);
 
-type colorsAndTexts = {
+type stylesToGenerate = {
   texts: option(list(Figma.Types.text)),
-  colors: option(list(Figma.Types.color)),
+  colors: option(list((string, Figma.Types.paints))),
+  components: option(list(Figma.Types.component)),
 };
 
 let name = "figma";
@@ -31,79 +32,36 @@ let expand = (~loc, ~path as _, args: list(string)) => {
   let res =
     Figma.Parser.parse(Figma.Api.getFile(~token, ~fileId, ~time, ()));
 
-  let colorsAndTexts = {
+  let stylesToGenerate = {
     texts: Figma.getTexts(res),
     colors: Figma.getColors(res),
+    components: Some(Figma.getComponents(res)),
   };
 
   Utils.Ast.makeModule(
     ~loc,
     ~name="Styleguide",
     [
-      switch (colorsAndTexts.texts) {
+      switch (stylesToGenerate.texts) {
       | Some(texts) =>
         texts
-        |> List.map((text: text) =>
-             text.characters |> Format.parseString(~styles=text.styles)
-           )
-        |> Format.mergeNodes
-        |> List.map(node => Format.nodeToAstNode(~loc, node))
+        |> Format.textNodesToAst(~loc)
         |> Utils.Ast.makeModule(~loc, ~name="Fonts")
       | None => Utils.Ast.makeModule(~loc, ~name="Fonts", [])
       },
-      switch (colorsAndTexts.colors) {
+      switch (stylesToGenerate.colors) {
       | Some(colors) =>
         colors
-        |> List.map((color: color) => {
-             let fill = color.fills |> List.hd;
-             let name =
-               String.map(
-                 char =>
-                   if (char == ' ' || char == '-') {
-                     '_';
-                   } else {
-                     char;
-                   },
-                 color.name,
-               );
-             let nameFirstChar = name.[0] |> Char.lowercase_ascii;
-
-             [%stri
-               let [%p
-                 Ast_builder.Default.pvar(
-                   ~loc,
-                   Printf.sprintf(
-                     "%c%s",
-                     nameFirstChar,
-                     String.sub(name, 1, String.length(name) - 1),
-                   ),
-                 )
-               ] =
-                 rgba(
-                   [%e
-                     Utils.Ast.makeInt(
-                       ~loc,
-                       int_of_float(fill.color.r *. 255.),
-                     )
-                   ],
-                   [%e
-                     Utils.Ast.makeInt(
-                       ~loc,
-                       int_of_float(fill.color.g *. 255.),
-                     )
-                   ],
-                   [%e
-                     Utils.Ast.makeInt(
-                       ~loc,
-                       int_of_float(fill.color.b *. 255.),
-                     )
-                   ],
-                   [%e Utils.Ast.makeFloat(~loc, fill.color.a)],
-                 )
-             ];
-           })
+        |> Format.colorNodesToAst(~loc)
         |> Utils.Ast.makeModule(~loc, ~name="Colors")
       | None => Utils.Ast.makeModule(~loc, ~name="Colors", [])
+      },
+      switch (stylesToGenerate.components) {
+      | Some(c) =>
+        c
+        |> Format.componentNodesToAst(~loc)
+        |> Utils.Ast.makeModule(~loc, ~name="Components")
+      | None => Utils.Ast.makeModule(~loc, ~name="Components", [])
       },
     ],
   );

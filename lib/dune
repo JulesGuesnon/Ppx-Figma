@@ -5,6 +5,7 @@
     (libraries ppxlib tls cohttp cohttp-lwt-unix lwt lwt.unix yojson str)
     (preprocess (pps ppxlib.metaquot))
     ;;(flags (:standard -dsource))
+    (flags (:standard -w -30))
 )
 
 (include_subdirs unqualified)

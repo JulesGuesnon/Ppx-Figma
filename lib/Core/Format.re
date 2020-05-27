@@ -148,3 +148,73 @@ let rec nodeToAstNode = (~loc, node) =>
         )
     ];
   };
+
+let textNodesToAst = (~loc, texts) => {
+  texts
+  |> List.map((text: text) =>
+       text.characters |> parseString(~styles=text.styles)
+     )
+  |> mergeNodes
+  |> List.map(node => nodeToAstNode(~loc, node));
+};
+
+let colorNodesToAst = (~loc, colors) => {
+  colors
+  |> List.map(((name, fills: paints)) => {
+       let fill = fills |> List.hd;
+
+       [%stri
+         let [%p Ast_builder.Default.pvar(~loc, formatString(Var, name))] =
+           rgba(
+             [%e
+               Utils.Ast.makeInt(~loc, int_of_float(fill.color.r *. 255.))
+             ],
+             [%e
+               Utils.Ast.makeInt(~loc, int_of_float(fill.color.g *. 255.))
+             ],
+             [%e
+               Utils.Ast.makeInt(~loc, int_of_float(fill.color.b *. 255.))
+             ],
+             [%e Utils.Ast.makeFloat(~loc, fill.color.a)],
+           )
+       ];
+     });
+};
+
+let styleOfComponent = component => {};
+
+let componentNodesToAst = (~loc, components) => {
+  let styles = [];
+
+  components
+  |> List.map((component: component) => {
+       Utils.Ast.makeModule(
+         ~loc,
+         ~name=formatString(Module, component.name),
+         [
+           [%stri
+             let [%p Ast_builder.Default.pvar(~loc, "root")] =
+               style(
+                 [%e
+                   Ast_builder.Default.elist(
+                     ~loc,
+                     List.map(
+                       ((key, value)) => {
+                         let expr = Figma.unitOfKeyAndValue(key, value);
+
+                         %expr
+                         [%e Ast_builder.Default.evar(~loc, key)](
+                           [%e expr(~loc)],
+                         );
+                       },
+                       styles,
+                     ),
+                   )
+                 ],
+               )
+           ],
+           ...component.children |> List.map(a => a),
+         ],
+       )
+     });
+};

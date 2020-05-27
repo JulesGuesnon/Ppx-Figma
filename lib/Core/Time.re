@@ -14,7 +14,7 @@ type t = {
   unit,
 };
 
-exception ParseTime(string);
+exception ParseTimeExn(string);
 
 let getUnitMultiplier = unit => {
   switch (unit) {
@@ -60,7 +60,7 @@ let regex = Str.regexp("^\\([0-9]+\\)\\([a-zA-Z]+\\)$");
 
 let ofString = str => {
   if (!Str.string_match(regex, str, 0)) {
-    raise(ParseTime("Couldn't parse the following time: " ++ str));
+    raise(ParseTimeExn("Couldn't parse the following time: " ++ str));
   };
 
   {
