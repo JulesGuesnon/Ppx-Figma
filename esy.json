@@ -19,47 +19,21 @@
         "run": "esy x ppx-figma"
     },
     "dependencies": {
-        "ocaml": "~4.06.100",
+        "ocaml": "4.06.1",
+        "@opam/ppxlib": "*",
         "@opam/tls": "*",
         "@opam/dune": "*",
         "@opam/reason": "*",
-        "@opam/ppxlib": "*",
         "@opam/cohttp": "*",
-        "@opam/cohttp-lwt-unix": "*",
+        "@opam/cohttp-lwt-unix": "2.5.4",
         "@opam/lwt": "*",
-        "@opam/yojson": "*"
+        "@opam/yojson": "*",
+        "@opam/num": "*",
+        "@opam/cstruct-sexp": "5.2.0",
+        "@opam/cstruct-lwt": "5.2.0"
     },
     "devDependencies": {
         "@opam/merlin": "*",
         "@opam/jbuilder": "*"
-    },
-    "resolutions": {
-        "@opam/dune": {
-            "source": "https://github.com/ocaml/dune/releases/download/2.3.1/dune-2.3.1.tbz#408307fb131d979658be51f23128a8ea76470915",
-            "override": {
-                "buildsInSource": true,
-                "build": [
-                    ["ocaml", "configure.ml", "--libdir", "#{self.lib}"],
-                    ["ocaml", "bootstrap.ml"],
-                    [
-                        "./dune.exe",
-                        "build",
-                        "-p",
-                        "dune",
-                        "--profile",
-                        "dune-bootstrap"
-                    ]
-                ],
-                "install": "esy-installer dune.install",
-                "buildEnv": {
-                    "OCAMLFIND_CONF": "$SECONDARY_OCAMLFIND_CONF"
-                },
-                "dependencies": {
-                    "esy-secondary-toolchain-findlib-conf": "*"
-                }
-            }
-        },
-        "esy-secondary-toolchain-findlib-conf": "prometheansacrifice/esy-secondary-toolchain-findlib-conf#3b2d207",
-        "@opam/ocaml-secondary-compiler": "esy-ocaml/ocaml#a5a77246b60f3"
     }
 }
