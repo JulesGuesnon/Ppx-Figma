@@ -1,3 +1,5 @@
+/* open Migrate_parsetree; */
+/* open Ast_410; */
 open Ppxlib;
 open Figma.Types;
 
@@ -56,13 +58,13 @@ let expand = (~loc, ~path as _, args: list(string)) => {
         |> Utils.Ast.makeModule(~loc, ~name="Colors")
       | None => Utils.Ast.makeModule(~loc, ~name="Colors", [])
       },
-      switch (stylesToGenerate.components) {
-      | Some(c) =>
-        c
-        |> Format.componentNodesToAst(~loc)
-        |> Utils.Ast.makeModule(~loc, ~name="Components")
-      | None => Utils.Ast.makeModule(~loc, ~name="Components", [])
-      },
+      /* switch (stylesToGenerate.components) {
+         | Some(c) =>
+           c
+           |> Format.componentNodesToAst(~loc)
+           |> Utils.Ast.makeModule(~loc, ~name="Components")
+         | None => Utils.Ast.makeModule(~loc, ~name="Components", [])
+         }, */
     ],
   );
 };

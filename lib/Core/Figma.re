@@ -80,8 +80,8 @@ module Types = {
     strokes: paints,
     strokeAlign,
     opacity: option(float),
-    size,
-    styles: list((string, primitive)),
+    size: option(size),
+    styles: option(list((string, primitive))),
   };
 
   type rectangle = {
@@ -93,8 +93,8 @@ module Types = {
     strokes: paints,
     strokeAlign,
     opacity: option(float),
-    size,
-    styles: list((string, primitive)),
+    size: option(size),
+    styles: option(list((string, primitive))),
     cornerRadius: float,
     rectangleCornerRadii: list(float),
   };
@@ -181,6 +181,9 @@ module Parser = {
     "lineHeightPercent",
     "lineHeightUnit",
     "lineHeightPercentFontSize",
+    "textAutoResize",
+    "textAlignHorizontal",
+    "textAlignVertical",
   ];
 
   let toRewriteCssKeys = [("lineHeightPx", "lineHeight")];
@@ -221,7 +224,11 @@ module Parser = {
     {
       type_: paint |> member("type") |> parsePaintType,
       visible: paint |> member("visible") |> to_bool_option,
-      opacity: paint |> member("opacity") |> to_float,
+      opacity:
+        paint
+        |> member("opacity")
+        |> to_float_option
+        |> Utils.Options.Float.valueOrDefault(1.0),
       color: paint |> member("color") |> parseColor_,
     };
   };
@@ -246,6 +253,7 @@ module Parser = {
     switch (type_) {
     | "DOCUMENT" => NodeDocument
     | "CANVAS" => NodeCanvas
+    | "FRAME" => NodeFrame
     | "TEXT" => NodeText
     | "RECTANGLE" => NodeRectangle
     | "GROUP" => NodeGroup
@@ -254,7 +262,12 @@ module Parser = {
     | "REGULAR_POLYGON"
     | "ELLIPSE" => NodeVector
     | "COMPONENT" => NodeComponent
-    | _ => raise(NodeTypeExn("The node type couldn't be found"))
+    | n =>
+      raise(
+        NodeTypeExn(
+          Printf.sprintf("The node type '%s' couldn't be found", n),
+        ),
+      )
     };
   };
 
@@ -311,32 +324,59 @@ module Parser = {
   };
 
   let parseVector = node => {
-    id: node |> member("id") |> to_string,
-    name: node |> member("name") |> to_string,
-    visible: node |> member("visible") |> to_bool_option,
-    type_: node |> member("type") |> to_string,
-    fills: node |> member("fills") |> to_list |> List.map(parsePaint),
-    strokes: node |> member("strokes") |> to_list |> List.map(parsePaint),
-    strokeAlign: node |> member("strokeAlign") |> parseStrokeAlign,
-    opacity: node |> member("opacity") |> to_float_option,
-    size: node |> member("size") |> parseSize,
-    styles: node |> member("styles") |> parseStyles,
+    {
+      id: node |> member("id") |> to_string,
+      name: node |> member("name") |> to_string,
+      visible: node |> member("visible") |> to_bool_option,
+      type_: node |> member("type") |> to_string,
+      fills: node |> member("fills") |> to_list |> List.map(parsePaint),
+      strokes: node |> member("strokes") |> to_list |> List.map(parsePaint),
+      strokeAlign: node |> member("strokeAlign") |> parseStrokeAlign,
+      opacity: node |> member("opacity") |> to_float_option,
+      size:
+        switch (node |> member("size")) {
+        | `Null => None
+        | v => Some(parseSize(v))
+        },
+      styles:
+        switch (node |> member("style")) {
+        | `Null => None
+        | v => Some(parseStyles(v))
+        },
+    };
   };
 
   let parseRectangle = node => {
-    id: node |> member("id") |> to_string,
-    name: node |> member("name") |> to_string,
-    visible: node |> member("visible") |> to_bool_option,
-    type_: node |> member("type") |> to_string,
-    fills: node |> member("fills") |> to_list |> List.map(parsePaint),
-    strokes: node |> member("strokes") |> to_list |> List.map(parsePaint),
-    strokeAlign: node |> member("strokeAlign") |> parseStrokeAlign,
-    opacity: node |> member("opacity") |> to_float_option,
-    size: node |> member("size") |> parseSize,
-    styles: node |> member("styles") |> parseStyles,
-    cornerRadius: node |> member("cornerRadius") |> to_float,
-    rectangleCornerRadii:
-      node |> member("rectangleCornerRadii") |> to_list |> List.map(to_float),
+    {
+      id: node |> member("id") |> to_string,
+      name: node |> member("name") |> to_string,
+      visible: node |> member("visible") |> to_bool_option,
+      type_: node |> member("type") |> to_string,
+      fills: node |> member("fills") |> to_list |> List.map(parsePaint),
+      strokes: node |> member("strokes") |> to_list |> List.map(parsePaint),
+      strokeAlign: node |> member("strokeAlign") |> parseStrokeAlign,
+      opacity: node |> member("opacity") |> to_float_option,
+      size:
+        switch (node |> member("size")) {
+        | `Null => None
+        | v => Some(parseSize(v))
+        },
+      styles:
+        switch (node |> member("style")) {
+        | `Null => None
+        | v => Some(parseStyles(v))
+        },
+      cornerRadius:
+        node
+        |> member("cornerRadius")
+        |> to_float_option
+        |> Utils.Options.Float.valueOrDefault(0.),
+      rectangleCornerRadii:
+        switch (node |> member("rectangleCornerRadii") |> to_option(to_list)) {
+        | Some(v) => v |> List.map(to_float)
+        | None => []
+        },
+    };
   };
 
   let parseText = textNode => {
@@ -346,7 +386,7 @@ module Parser = {
       visible: textNode |> member("visible") |> to_bool_option,
       type_: textNode |> member("type") |> to_string,
       characters: textNode |> member("characters") |> to_string,
-      styles: textNode |> member("styles") |> parseStyles,
+      styles: textNode |> member("style") |> parseStyles,
     };
   };
 
@@ -411,10 +451,15 @@ module Parser = {
       fills:
         componentNode |> member("fills") |> to_list |> List.map(parsePaint),
       rectangleCornerRadii:
-        componentNode
-        |> member("rectangleCornerRadii")
-        |> to_list
-        |> List.map(to_float),
+        switch (
+          componentNode
+          |> member("rectangleCornerRadii")
+          |> to_option(to_list)
+        ) {
+        | Some(v) => v |> List.map(to_float)
+        | None => []
+        },
+
       absoluteBoundingBox:
         componentNode
         |> member("parseAbsoluteBoundingBox")
@@ -475,7 +520,13 @@ module Parser = {
       visible: docNode |> member("visible") |> to_bool_option,
       type_: docNode |> member("type") |> to_string,
       children:
-        docNode |> member("children") |> to_list |> List.map(parseCanvas),
+        docNode
+        |> member("children")
+        |> to_list
+        |> List.filter(canvasNode =>
+             canvasNode |> member("name") |> to_string == "Styleguide"
+           )
+        |> List.map(parseCanvas),
     };
   };
 
@@ -592,18 +643,19 @@ let rec getComponentsOfFrameChild = children => {
 };
 
 let getComponents = document => {
-  document.children
-  |> List.map((canvas: canvas) => {
-       canvas.children
-       |> List.map((child: canvasChild) =>
-            switch (child) {
-            | Component(c) => [c]
-            | Frame(f) => f.children |> getComponentsOfFrameChild
-            }
-          )
-       |> List.flatten
-     })
-  |> List.flatten;
+  [];
+    /* document.children
+       |> List.map((canvas: canvas) => {
+            canvas.children
+            |> List.map((child: canvasChild) =>
+                 switch (child) {
+                 | Component(c) => [c]
+                 | Frame(f) => f.children |> getComponentsOfFrameChild
+                 }
+               )
+            |> List.flatten
+          })
+       |> List.flatten; */
 };
 
 let unitOfKeyAndValue = (cssProps, value) =>

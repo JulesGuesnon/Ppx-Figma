@@ -21,7 +21,7 @@ let formatString = (type_: nodeType, str) => {
   let cleanedStr =
     String.map(
       char =>
-        if (char == ' ' || char == '-') {
+        if (char == ' ' || char == '-' || char == '/') {
           '_';
         } else {
           char;
@@ -175,7 +175,13 @@ let colorNodesToAst = (~loc, colors) => {
              [%e
                Utils.Ast.makeInt(~loc, int_of_float(fill.color.b *. 255.))
              ],
-             [%e Utils.Ast.makeFloat(~loc, fill.color.a)],
+             [%e
+               Utils.Ast.makePolyVariant(
+                 ~loc,
+                 ~label="num",
+                 Some(Utils.Ast.makeFloat(~loc, fill.color.a)),
+               )
+             ],
            )
        ];
      });

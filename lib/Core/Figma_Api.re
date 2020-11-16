@@ -4,7 +4,7 @@ open Lwt.Infix;
 
 module Cache = {
   let dirPath = Printf.sprintf("%s/.cache", Sys.getcwd());
-  let fileRegex = Str.regexp("\\([0-9]+\\)-\\([0-9]+\\)\\([a-zA-Z]+\\).json");
+  let fileRegex = Str.regexp("\\([0-9]+\\)-\\([0-9]+[a-zA-Z]+\\).json");
 
   let createCacheDirIfNotExists = () =>
     if (!Utils.Fs.dirExists(dirPath)) {
@@ -37,8 +37,8 @@ module Cache = {
       switch (
         {
           Str.string_match(fileRegex, cacheFilename, 0) |> ignore;
-          let expirationStr = Str.matched_group(0, cacheFilename);
-          let fileTime = Str.matched_group(1, cacheFilename);
+          let expirationStr = Str.matched_group(1, cacheFilename);
+          let fileTime = Str.matched_group(2, cacheFilename);
 
           let expiration =
             try(float_of_string(expirationStr)) {
