@@ -1,26 +1,3 @@
-"@opam/ocaml-secondary-compiler": "esy-ocaml/ocaml#a5a77246b60f3"
-"resolutions": {
-"@opam/dune": {
-"source": "https://github.com/ocaml/dune/releases/download/2.7.1/dune-2.7.1.tbz#b3a667cdf59eb549523e868ce30358952b02fd01",
-"override": {
-"buildsInSource": true,
-"build": [
-["ocaml", "configure.ml", "--libdir", "#{self.lib}"],
-["ocaml", "bootstrap.ml"],
-[
-"./dune.exe",
-"build",
-"-p",
-"dune",
-"--profile",
-"dune-bootstrap"
-]
-],
-"install": "esy-installer dune.install"
-}
-}
-}
-
 # :art: Ppx-Figma
 
 Ppx-Figma will autogenerate styles based on [Bs-Css](https://github.com/reasonml-labs/bs-css) from a figma document for you.
