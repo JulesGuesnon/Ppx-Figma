@@ -10,8 +10,6 @@ if (platform == 'win32')
     mainEsyJson.resolutions['@opam/conf-libssl'] =
         'esy-packages/esy-openssl#4476291'
 
-if (platform == 'darwin') mainEsyJson.dependencies.ocaml = '4.6.1001'
-
 const esyJson = JSON.stringify(mainEsyJson, null, 2)
 
 const esyJsonPath = path.join(__dirname, '..', '..', 'esy.json')

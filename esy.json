@@ -19,7 +19,7 @@
         "run": "esy x ppx-figma"
     },
     "dependencies": {
-        "ocaml": "4.06.1",
+        "ocaml": "4.6.1003",
         "@opam/ppxlib": "*",
         "@opam/tls": "*",
         "@opam/dune": "*",

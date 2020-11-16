@@ -18,7 +18,8 @@ jobs:
             - name: Install esy
               run: npm i -g esy
 
-            - name: Update esy resolution (allow to fix some versions that works on local but not in cloud)
+            - name: Update esy resolution (Windows only)
+              if: ${{ matrix.os == 'windows-latest'}}
               run: node .github/scripts/esy.json.js
 
             - name: Try to restore cache
