@@ -10,16 +10,7 @@ if (platform == 'win32')
     mainEsyJson.resolutions['@opam/conf-libssl'] =
         'esy-packages/esy-openssl#4476291'
 
-if (platform == 'darwin')
-    mainEsyJson.resolutions['ocaml'] = {
-        source: 'esy-ocaml/ocaml#1805622dc40c1c569a1720078b5707eeba32b07d',
-        override: {
-            build: [
-                './esy-configure -no-cfi -cc "gcc -Wno-implicit-function-declaration" -prefix $cur__install',
-                './esy-build',
-            ],
-        },
-    }
+if (platform == 'darwin') mainEsyJson.dependencies.ocaml = '4.6.1001'
 
 const esyJson = JSON.stringify(mainEsyJson, null, 2)
 
