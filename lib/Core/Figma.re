@@ -588,6 +588,13 @@ let getColors = document => {
     | Some(f) =>
       Some(
         f.children
+        |> List.filter(child =>
+             switch (child) {
+             | Rectangle(_)
+             | Vector(_) => true
+             | _ => false
+             }
+           )
         |> List.map(child => {
              switch (child) {
              | Rectangle(r) => (r.name, r.fills)
